@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const vendorSchema = mongoose.Schema({
-    name: String,
+    shopId: String,
+    ownerName: String,
     shopName: String,
     email: String,
     password: String,
@@ -10,14 +11,15 @@ const vendorSchema = mongoose.Schema({
     shopImage: String,
     shopAddress:{
         locality: String,
+        city: String,
         state: String,
         pincode: Number,
         addressLine: String,
         userGivenAddress: String
     },
     location: {
-        type: { type: String },
-        coordinates: [Number],
+        latitude: Number,
+        longitude: Number
     },
     shopTimings: {
         monday : {
