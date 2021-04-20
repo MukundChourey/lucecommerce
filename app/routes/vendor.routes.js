@@ -8,7 +8,7 @@ module.exports = (app) => {
 
 
     //vendor register
-    app.get('/register', vendorReg.register);
+    app.post('/register', vendorReg.register);
 
     
 
