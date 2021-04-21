@@ -1,6 +1,18 @@
 const VendorShop = require("../model/vendor.model.js");
+const Items = require("../model/items.model.js");
 var escapeHtml = require('escape-html')
 
+//login
+exports.login = (req,res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    res.send("Logged In");
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+}
+
+//shop register
 exports.register = (req, res) => {
   let header = req.get("AuthKey");
   if (header == "asdfgh") {
@@ -34,7 +46,7 @@ exports.register = (req, res) => {
       if (!validateemail || !validatecontact) {
         res.send({ status: 201, message: "invalid email or contact number" });
       } else {
-        let shopId = escapeHtml(req.body.shopId);
+        // let shopId = escapeHtml(req.body.shopId);
         let ownerName = escapeHtml(req.body.ownerName);
         let shopName = escapeHtml(req.body.shopName);
         let email = escapeHtml(req.body.email);
@@ -71,7 +83,7 @@ exports.register = (req, res) => {
               }
             } else {
               const vendorShops = new VendorShop({
-                shopId: shopId,
+                shopId: "shop"+contactNo+"",
                 ownerName: ownerName,
                 shopName: shopName,
                 email: email,
@@ -150,10 +162,28 @@ exports.register = (req, res) => {
   }
 };
 
-exports.login = (req,res) => {
+//item detail
+exports.itemdetail = (req,res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
-    res.send("Logged In");
+    
+    if (
+      !req.body.shopId ||
+      !req.body.itemName ||
+      !req.body.itemInStock ||
+      !req.body.price.sellingPrice ||
+      !req.body.price.MRP ||
+      !req.body.itemImage ||
+      !req.body.itemType ||
+      !req.body.sellingType ||
+      !req.body.sellingQuantity
+    ) {
+      return res.send({ message: "inadequate item details" });
+    } else{
+      res.send(req.body.shopId);
+    }
+    
+
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
