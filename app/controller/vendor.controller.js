@@ -146,6 +146,15 @@ exports.register = (req, res) => {
       } //till here
     }
   } else {
-    res.send({ status: 201, message: "Cant't proceed further" });
+    res.send({ status: 201, message: "Your aren't authorized" });
   }
 };
+
+exports.login = (req,res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    res.send("Logged In");
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+}
