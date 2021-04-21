@@ -49,9 +49,7 @@ exports.register = (req, res) => {
         let state = escapeHtml(req.body.shopAddress.state);
         let pincode = escapeHtml(req.body.shopAddress.pincode);
         let addressLine = escapeHtml(req.body.shopAddress.addressLine);
-        let userGivenAddress = escapeHtml(
-          req.body.shopAddress.userGivenAddress
-        );
+        let userGivenAddress = escapeHtml(req.body.shopAddress.userGivenAddress);
         let timings = req.body.shopTimings;
 
         VendorShop
