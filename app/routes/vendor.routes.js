@@ -11,7 +11,7 @@ module.exports = (app) => {
     app.post('/register', vendorReg.register);
 
     //vendor login  
-    // app.post('/vendorlogin', vendorReg.login);
+    app.post('/vendorlogin', vendorReg.login);
 
     
 
