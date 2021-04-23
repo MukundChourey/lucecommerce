@@ -1,16 +1,16 @@
 const VendorShop = require("../model/vendor.model.js");
 const Items = require("../model/items.model.js");
-var escapeHtml = require('escape-html')
+var escapeHtml = require("escape-html");
 
 //login
-exports.login = (req,res) => {
+exports.login = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
     res.send("Logged In");
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
-}
+};
 
 //shop register
 exports.register = (req, res) => {
@@ -25,7 +25,7 @@ exports.register = (req, res) => {
       !req.body.shopName ||
       !req.body.shopType
     ) {
-      return res.send({ message: "inadequate Owners data" });
+      return res.send({ status:201, message: "inadequate Owners data" });
     } else if (
       !req.body.shopTimings.sunday ||
       !req.body.shopTimings.monday ||
@@ -61,100 +61,107 @@ exports.register = (req, res) => {
         let state = escapeHtml(req.body.shopAddress.state);
         let pincode = escapeHtml(req.body.shopAddress.pincode);
         let addressLine = escapeHtml(req.body.shopAddress.addressLine);
-        let userGivenAddress = escapeHtml(req.body.shopAddress.userGivenAddress);
+        let userGivenAddress = escapeHtml(
+          req.body.shopAddress.userGivenAddress
+        );
         let timings = req.body.shopTimings;
 
-        VendorShop
-          .find({ $or: [{ email: email }, { contactNo: contactNo }] })
-          .then((data) => {
-            if (data != "") {
-              if (data[0].email == email && data[0].contactNo == contactNo) {
-                res.send({
-                  status: 201,
-                  message: "email id and contact number already existed!",
-                });
-              } else if (data[0].email == email) {
-                res.send({ status: 201, message: "email id already existed!" });
-              } else if (data[0].contactNo == contactNo) {
-                res.send({
-                  status: 201,
-                  message: "contact number already existed!",
-                });
-              }
-            } else {
-              const vendorShops = new VendorShop({
-                shopId: "shop"+contactNo+"",
-                ownerName: ownerName,
-                shopName: shopName,
-                email: email,
-                password: password,
-                contactNo: contactNo,
-                shopType: shopType,
-                shopImage: shopImage,
-                location: {
-                  latitude: latitude,
-                  longitude: longitude,
-                },
-                shopAddress: {
-                  locality: locality,
-                  city: city,
-                  state: state,
-                  pincode: pincode,
-                  addressLine: addressLine,
-                  userGivenAddress: userGivenAddress,
-                },
-                shopTimings: {
-                  monday: {
-                    status: timings.monday.status,
-                    shopOpeningTime: timings.monday.shopOpeningTime,
-                    shopClosingTime: timings.monday.shopClosingTime,
-                  },
-                  tuesday: {
-                    status: timings.tuesday.status,
-                    shopOpeningTime: timings.tuesday.shopOpeningTime,
-                    shopClosingTime: timings.tuesday.shopClosingTime,
-                  },
-                  wednesday: {
-                    status: timings.wednesday.status,
-                    shopOpeningTime: timings.wednesday.shopOpeningTime,
-                    shopClosingTime: timings.wednesday.shopClosingTime,
-                  },
-                  thursday: {
-                    status: timings.thursday.status,
-                    shopOpeningTime: timings.thursday.shopOpeningTime,
-                    shopClosingTime: timings.thursday.shopClosingTime,
-                  },
-                  friday: {
-                    status: timings.friday.status,
-                    shopOpeningTime: timings.friday.shopOpeningTime,
-                    shopClosingTime: timings.friday.shopClosingTime,
-                  },
-                  saturday: {
-                    status: timings.saturday.status,
-                    shopOpeningTime: timings.saturday.shopOpeningTime,
-                    shopClosingTime: timings.saturday.shopClosingTime,
-                  },
-                  sunday: {
-                    status: timings.sunday.status,
-                    shopOpeningTime: timings.sunday.shopOpeningTime,
-                    shopClosingTime: timings.sunday.shopClosingTime,
-                  },
-                },
+        VendorShop.find({
+          $or: [{ email: email }, { contactNo: contactNo }],
+        }).then((data) => {
+          if (data != "") {
+            if (data[0].email == email && data[0].contactNo == contactNo) {
+              res.send({
+                status: 201,
+                message: "email id and contact number already existed!",
               });
+            } else if (data[0].email == email) {
+              res.send({ status: 201, message: "email id already existed!" });
+            } else if (data[0].contactNo == contactNo) {
+              res.send({
+                status: 201,
+                message: "contact number already existed!",
+              });
+            }
+          } else {
+            const vendorShops = new VendorShop({
+              shopId: "shop" + contactNo + "",
+              ownerName: ownerName,
+              shopName: shopName,
+              email: email,
+              password: password,
+              contactNo: contactNo,
+              shopType: shopType,
+              shopImage: shopImage,
+              location: {
+                latitude: latitude,
+                longitude: longitude,
+              },
+              shopAddress: {
+                locality: locality,
+                city: city,
+                state: state,
+                pincode: pincode,
+                addressLine: addressLine,
+                userGivenAddress: userGivenAddress,
+              },
+              shopTimings: {
+                monday: {
+                  status: timings.monday.status,
+                  shopOpeningTime: timings.monday.shopOpeningTime,
+                  shopClosingTime: timings.monday.shopClosingTime,
+                },
+                tuesday: {
+                  status: timings.tuesday.status,
+                  shopOpeningTime: timings.tuesday.shopOpeningTime,
+                  shopClosingTime: timings.tuesday.shopClosingTime,
+                },
+                wednesday: {
+                  status: timings.wednesday.status,
+                  shopOpeningTime: timings.wednesday.shopOpeningTime,
+                  shopClosingTime: timings.wednesday.shopClosingTime,
+                },
+                thursday: {
+                  status: timings.thursday.status,
+                  shopOpeningTime: timings.thursday.shopOpeningTime,
+                  shopClosingTime: timings.thursday.shopClosingTime,
+                },
+                friday: {
+                  status: timings.friday.status,
+                  shopOpeningTime: timings.friday.shopOpeningTime,
+                  shopClosingTime: timings.friday.shopClosingTime,
+                },
+                saturday: {
+                  status: timings.saturday.status,
+                  shopOpeningTime: timings.saturday.shopOpeningTime,
+                  shopClosingTime: timings.saturday.shopClosingTime,
+                },
+                sunday: {
+                  status: timings.sunday.status,
+                  shopOpeningTime: timings.sunday.shopOpeningTime,
+                  shopClosingTime: timings.sunday.shopClosingTime,
+                },
+              },
+            });
 
             //   res.send(vendorShops);
 
-              vendorShops.save().then(data => {
-
-                      res.send("inserted")
-
-                  }).catch(err => {
-                      res.send({
-                          message: err.message || "Some error occured"
-                      });
+            vendorShops
+              .save()
+              .then((data) => {
+                res.send({
+                  status: 201,
+                  message: "success",
+                });
+              })
+              .catch((err) => {
+                res.send({
+                  status:201,
+                  message: err.message || "Some error occured",
+                });
               });
-            }
-          }); //insert before here
+          }
+        }); //insert before here
       } //till here
     }
   } else {
@@ -163,28 +170,64 @@ exports.register = (req, res) => {
 };
 
 //item detail
-exports.itemdetail = (req,res) => {
+exports.itemdetail = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
-    
     if (
       !req.body.shopId ||
       !req.body.itemName ||
       !req.body.itemInStock ||
-      !req.body.price.sellingPrice ||
-      !req.body.price.MRP ||
+      !req.body.price ||
       !req.body.itemImage ||
       !req.body.itemType ||
-      !req.body.sellingType ||
+      !req.body.itemUnit ||
       !req.body.sellingQuantity
     ) {
-      return res.send({ message: "inadequate item details" });
-    } else{
-      res.send(req.body.shopId);
-    }
-    
+      return res.send({status:201, message: "inadequate item details" });
+    } else {
+      let shopId = escapeHtml(req.body.shopId);
+      let itemName = escapeHtml(req.body.itemName);
+      let itemInStock = escapeHtml(req.body.itemInStock);
+      let itemImage = escapeHtml(req.body.itemImage);
+      let itemType = escapeHtml(req.body.itemType);
+      let itemUnit = escapeHtml(req.body.itemUnit);
+      let sellingQuantity = escapeHtml(req.body.sellingQuantity);
+      let sellingPrice = escapeHtml(req.body.price.sellingPrice);
+      let MRP = escapeHtml(req.body.price.MRP);
+      let itemDescription = escapeHtml(req.body.itemDescription);
 
+      const item = new Items({
+        shopId: shopId,
+        itemId: itemName + shopId,
+        itemName: itemName,
+        itemInStock: itemInStock,
+        price: {
+          sellingPrice: sellingPrice,
+          MRP: MRP,
+        },
+        itemImage: itemImage,
+        itemType: itemType,
+        itemUnit: itemUnit,
+        sellingQuantity: sellingQuantity,
+        itemDescription: itemDescription,
+      });
+
+      item
+        .save()
+        .then((data) => {
+          res.send({
+            status: 201,
+            message: "success",
+          });
+        })
+        .catch((err) => {
+          res.send({
+            status: 201,
+            message: err.message || "Some error occured",
+          });
+        });
+    }
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
-}
+};
