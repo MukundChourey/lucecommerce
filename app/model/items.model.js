@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const items = mongoose.Schema({
-    shopId: Number,
-    itemId: Number,
+    shopId: String,
+    itemId: String,
     itemName: String,
     itemInStock: Number,
     price: {
@@ -11,7 +11,7 @@ const items = mongoose.Schema({
     },
     itemImage: String,
     itemType: String,
-    sellingType: String,
+    itemUnit: String,
     sellingQuantity: Number,   
     itemDescription: {
         type: String,
