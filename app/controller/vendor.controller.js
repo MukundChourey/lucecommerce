@@ -6,7 +6,45 @@ var escapeHtml = require("escape-html");
 exports.login = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
-    res.send("Logged In");
+    if (!req.body.parameter || !req.body.password ) {
+      return res.send({ status:201, message: "inadequate login data" });
+    }else{
+      let password = escapeHtml(req.body.password);
+      let parameter = escapeHtml(req.body.parameter);
+
+      VendorShop.findOne({ $or: [ {email: {$eq: parameter} }, {contact: {$eq: parameter}} ] })
+      .then(note => {
+          if(!note) {
+              
+            return res.status(201).send({
+              status: 201,
+                message: "No user with these data exist"
+            }); 
+                          
+          }else{   
+            
+            if (password == note.password) {
+              return res.status(200).send({
+                status: 200,
+                  message: "success"
+              });
+            } else {
+              return res.status(201).send({
+                status: 201,
+                  message: "Invalid Password"
+              });
+            }
+                     
+          }
+          
+      }).catch(err => {        
+          return res.status(201).send({
+              status: 201,
+              message: "there was an error"
+          });
+      });
+
+    }
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
