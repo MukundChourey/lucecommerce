@@ -45,9 +45,8 @@ app.use(function (req, res, next) {
 });
 
 
-
+require('./app/routes/user.routes.js')(app);
 require('./app/routes/vendor.routes.js')(app);
-
 
 // listen for requests
 app.listen(3000, () => {
