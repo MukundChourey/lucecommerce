@@ -7,7 +7,7 @@ module.exports = (app) => {
     app.post('/userRegister', user.register);
 
     //user login  
-    // app.post('/userlogin', user.login);
+    app.post('/userLogin', user.login);
 
     //user order
     // app.post('/order', user.order);
