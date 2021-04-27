@@ -26,7 +26,7 @@ exports.login = (req, res) => {
             if (password == note.password) {
               return res.status(200).send({
                 status: 200,
-                  message: "success"
+                  message: note.shopId
               });
             } else {
               return res.status(201).send({
@@ -122,8 +122,11 @@ exports.register = (req, res) => {
               });
             }
           } else {
+            var d = new Date();
+            var n = d.getTime();
+            newshopid = "shop" + n + "";
             const vendorShops = new VendorShop({
-              shopId: "shop" + contactNo + "",
+              shopId: "shop" + n + "",
               ownerName: ownerName,
               shopName: shopName,
               email: email,
@@ -189,7 +192,7 @@ exports.register = (req, res) => {
               .then((data) => {
                 res.send({
                   status: 201,
-                  message: "success",
+                  message: newshopid,
                 });
               })
               .catch((err) => {
@@ -208,7 +211,7 @@ exports.register = (req, res) => {
 };
 
 //item detail
-exports.itemdetail = (req, res) => {
+exports.additem = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
     if (
@@ -267,5 +270,26 @@ exports.itemdetail = (req, res) => {
     }
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
+
+exports.itemdetail = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+
+    let shopId = escapeHtml(req.body.shopId);
+    var query = { shopId: shopId };
+    Items.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 201,
+          message: "No shop found with this Id",
+        });
+      }else{
+        res.send(data);
+      }
+
+    });
+
   }
 };

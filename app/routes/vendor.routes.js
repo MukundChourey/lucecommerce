@@ -13,8 +13,11 @@ module.exports = (app) => {
     //vendor login  
     app.post('/vendorLogin', vendorReg.login);
 
-    //vendor itemdetail
-    app.post('/itemdetail', vendorReg.itemdetail);
+    //vendor add item
+    app.post('/addItem', vendorReg.additem);
+
+    //vendor item details
+    app.post('/itemDetail', vendorReg.itemdetail);
 
     
 

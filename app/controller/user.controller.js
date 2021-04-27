@@ -25,7 +25,7 @@ exports.login = (req, res) => {
               if (password == note.password) {
                 return res.status(200).send({
                   status: 200,
-                    message: "success"
+                    message: note.userId
                 });
               } else {
                 return res.status(201).send({
@@ -109,8 +109,11 @@ exports.register = (req,res) => {
               });
             }
           } else {
+            var d = new Date();
+            var n = d.getTime();
+            newuserid = "user" + n + "";
             const user = new User({
-              userId: "user" + contactNo + "",
+              userId: "user" + n + "",
               userName: userName,
               email: email,
               password: password,
@@ -135,7 +138,7 @@ exports.register = (req,res) => {
               .then((data) => {
                 res.send({
                   status: 201,
-                  message: "success",
+                  message: newuserid,
                 });
               })
               .catch((err) => {
@@ -152,4 +155,16 @@ exports.register = (req,res) => {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
 
+};
+
+
+
+
+exports.order = (req,res) => {
+  var d = new Date();
+  var n = d.getTime();
+  res.send({
+    status: 200,
+    msg: n
+  });
 };
