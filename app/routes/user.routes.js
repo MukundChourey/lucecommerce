@@ -10,7 +10,7 @@ module.exports = (app) => {
     app.post('/userLogin', user.login);
 
     //user order
-    // app.post('/order', user.order);
+    app.post('/order', user.order);
     
 
 }
