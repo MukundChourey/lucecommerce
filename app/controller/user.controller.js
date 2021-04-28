@@ -1,57 +1,56 @@
 const User = require("../model/user.model.js");
+const VendorShop = require("../model/vendor.model.js");
+
 var escapeHtml = require("escape-html");
+var GeoPoint = require("geopoint");
 
 //login
 exports.login = (req, res) => {
-    let header = req.get("Authkey");
-    if (header == "asdfgh") {
-      if (!req.body.parameter || !req.body.password ) {
-        return res.send({ status:201, message: "inadequate login data" });
-      }else{
-        let password = escapeHtml(req.body.password);
-        let parameter = escapeHtml(req.body.parameter);
-  
-        User.findOne({ $or: [ {email: {$eq: parameter} }, {contact: {$eq: parameter}} ] })
-        .then(note => {
-            if(!note) {
-                
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    if (!req.body.parameter || !req.body.password) {
+      return res.send({ status: 201, message: "inadequate login data" });
+    } else {
+      let password = escapeHtml(req.body.password);
+      let parameter = escapeHtml(req.body.parameter);
+
+      User.findOne({
+        $or: [{ email: { $eq: parameter } }, { contact: { $eq: parameter } }],
+      })
+        .then((note) => {
+          if (!note) {
+            return res.status(201).send({
+              status: 201,
+              message: "No user with these data exist",
+            });
+          } else {
+            if (password == note.password) {
+              return res.status(200).send({
+                status: 200,
+                message: note.userId,
+              });
+            } else {
               return res.status(201).send({
                 status: 201,
-                  message: "No user with these data exist"
-              }); 
-                            
-            }else{   
-              
-              if (password == note.password) {
-                return res.status(200).send({
-                  status: 200,
-                    message: note.userId
-                });
-              } else {
-                return res.status(201).send({
-                  status: 201,
-                    message: "Invalid Password"
-                });
-              }
-                       
+                message: "Invalid Password",
+              });
             }
-            
-        }).catch(err => {        
-            return res.status(201).send({
-                status: 201,
-                message: "there was an error"
-            });
+          }
+        })
+        .catch((err) => {
+          return res.status(201).send({
+            status: 201,
+            message: "there was an error",
+          });
         });
-  
-      }
-    } else {
-      res.send({ status: 201, message: "Your aren't authorized" });
     }
-  };
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
 
 //register
-exports.register = (req,res) => {
-    
+exports.register = (req, res) => {
   let header = req.get("AuthKey");
   if (header == "asdfgh") {
     if (
@@ -63,10 +62,9 @@ exports.register = (req,res) => {
       !req.body.address.city ||
       !req.body.address.state ||
       !req.body.address.pincode ||
-      !req.body.address.addressLine ||
-      !req.body.address.userGivenAddress
+      !req.body.address.addressLine
     ) {
-      return res.send({ status:201, message: "inadequate Owners data" });
+      return res.send({ status: 201, message: "inadequate Owners data" });
     } else {
       var regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
       var validateemail = regEx.test(req.body.email);
@@ -89,7 +87,6 @@ exports.register = (req,res) => {
         let state = escapeHtml(req.body.address.state);
         let pincode = escapeHtml(req.body.address.pincode);
         let addressLine = escapeHtml(req.body.address.addressLine);
-        let userGivenAddress = escapeHtml(req.body.address.userGivenAddress);
 
         User.find({
           $or: [{ email: email }, { contactNo: contactNo }],
@@ -128,10 +125,8 @@ exports.register = (req,res) => {
                 state: state,
                 pincode: pincode,
                 addressLine: addressLine,
-                userGivenAddress: userGivenAddress,
-              }
+              },
             });
-
 
             user
               .save()
@@ -143,7 +138,7 @@ exports.register = (req,res) => {
               })
               .catch((err) => {
                 res.send({
-                  status:201,
+                  status: 201,
                   message: err.message || "Some error occured",
                 });
               });
@@ -154,17 +149,81 @@ exports.register = (req,res) => {
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
-
 };
 
+exports.listShops = (req, res) => {
+  let dist = escapeHtml(req.body.dist);
+  dist = Number(dist);
+  let latitude = escapeHtml(req.body.location.latitude);
+  let longitude = escapeHtml(req.body.location.longitude);
 
+  var response = [];
 
+  var userLocation = {
+    lat: latitude,
+    lon: longitude,
+  };
+  lat1 = Number(latitude);
+  long1 = Number(longitude);
+  point1 = new GeoPoint(lat1, long1);
 
-exports.order = (req,res) => {
-  var d = new Date();
-  var n = d.getTime();
+  //   VendorShop.find({}).then((data) => {
+  //     if (data == "") {
+  //       res.send({
+  //         status: 201,
+  //         message: "No data yet",
+  //       });
+  //     } else {
+  //       data.forEach((shop) => {
+  //         shopLocation = {
+  //           lat: shop.location.latitude,
+  //           lon: shop.location.longitude
+  //         }
+  //         // if (Distance.between(userLocation, shopLocation).human_readable().distance < dist) {
+  //           response.push(Distance.between(userLocation, shopLocation).human_readable().distance);
+  //         // }
+  //       });
+  //       res.send(response);
+  //     }
+  //   });
+  // };
+
+  VendorShop.find({}).then((data) => {
+    if (data == "") {
+      res.send({
+        status: 201,
+        message: "No data yet",
+      });
+    } else {
+      data.forEach((shop) => {
+        lat2 = Number(shop.location.latitude);
+        long2 = Number(shop.location.longitude);
+        shopLocation = new GeoPoint(lat2, long2);
+
+        if (point1.distanceTo(shopLocation, true) <= dist) {
+        response.push({
+          distance: point1.distanceTo(shopLocation, true),
+          shopDetails: shop});
+        }
+      });
+      res.send(response);
+    }
+  });
+};
+
+exports.order = (req, res) => {
+  var Oslo = {
+    lat: 59.914,
+    lon: 10.752,
+  };
+  var Berlin = {
+    lat: 52.523,
+    lon: 13.412,
+  };
+  var OsloToBerlin = Distance.between(Oslo, Berlin);
+
   res.send({
     status: 200,
-    msg: n
+    msg: "" + OsloToBerlin.human_readable("customary"),
   });
 };
