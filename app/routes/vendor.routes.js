@@ -19,6 +19,9 @@ module.exports = (app) => {
     //vendor item details
     app.post('/itemDetail', vendorReg.itemdetail);
 
+    //update vendor item details
+    app.post('/updateItem', vendorReg.updateItem);
+
     
 
 }
