@@ -286,7 +286,10 @@ exports.itemdetail = (req, res) => {
           message: "No shop found with this Id",
         });
       }else{
-        res.send(data);
+        res.send({
+          status: 200,
+          data: data,
+        });
       }
 
     });
