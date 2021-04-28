@@ -6,44 +6,41 @@ var escapeHtml = require("escape-html");
 exports.login = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
-    if (!req.body.parameter || !req.body.password ) {
-      return res.send({ status:201, message: "inadequate login data" });
-    }else{
+    if (!req.body.parameter || !req.body.password) {
+      return res.send({ status: 201, message: "inadequate login data" });
+    } else {
       let password = escapeHtml(req.body.password);
       let parameter = escapeHtml(req.body.parameter);
 
-      VendorShop.findOne({ $or: [ {email: {$eq: parameter} }, {contact: {$eq: parameter}} ] })
-      .then(note => {
-          if(!note) {
-              
+      VendorShop.findOne({
+        $or: [{ email: { $eq: parameter } }, { contactNo: { $eq: parameter } }],
+      })
+        .then((note) => {
+          if (!note) {
             return res.status(201).send({
               status: 201,
-                message: "No user with these data exist"
-            }); 
-                          
-          }else{   
-            
+              message: "No user with these data exist",
+            });
+          } else {
             if (password == note.password) {
               return res.status(200).send({
                 status: 200,
-                  message: note.shopId
+                data: note,
               });
             } else {
               return res.status(201).send({
                 status: 201,
-                  message: "Invalid Password"
+                message: "Invalid Password",
               });
             }
-                     
           }
-          
-      }).catch(err => {        
+        })
+        .catch((err) => {
           return res.status(201).send({
-              status: 201,
-              message: "there was an error"
+            status: 201,
+            message: "there was an error",
           });
-      });
-
+        });
     }
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
@@ -63,7 +60,7 @@ exports.register = (req, res) => {
       !req.body.shopName ||
       !req.body.shopType
     ) {
-      return res.send({ status:201, message: "inadequate Owners data" });
+      return res.send({ status: 201, message: "inadequate Owners data" });
     } else if (
       !req.body.shopTimings.sunday ||
       !req.body.shopTimings.monday ||
@@ -197,7 +194,7 @@ exports.register = (req, res) => {
               })
               .catch((err) => {
                 res.send({
-                  status:201,
+                  status: 201,
                   message: err.message || "Some error occured",
                 });
               });
@@ -224,7 +221,7 @@ exports.additem = (req, res) => {
       !req.body.itemUnit ||
       !req.body.sellingQuantity
     ) {
-      return res.send({status:201, message: "inadequate item details" });
+      return res.send({ status: 201, message: "inadequate item details" });
     } else {
       let shopId = escapeHtml(req.body.shopId);
       let itemName = escapeHtml(req.body.itemName);
@@ -276,27 +273,23 @@ exports.additem = (req, res) => {
 exports.itemdetail = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
-
     let shopId = escapeHtml(req.body.shopId);
     var query = { shopId: shopId };
     Items.find(query).then((data) => {
       if (data == "") {
         res.send({
-          status: 201,
-          message: "No shop found with this Id",
+          status: 200,
+          message: "No item added yet",
         });
-      }else{
+      } else {
         res.send({
           status: 200,
           data: data,
         });
       }
-
     });
-
   }
 };
-
 
 //item detail
 exports.updateItem = (req, res) => {
@@ -310,7 +303,7 @@ exports.updateItem = (req, res) => {
       !req.body.itemUnit ||
       !req.body.sellingQuantity
     ) {
-      return res.send({status:201, message: "inadequate item details" });
+      return res.send({ status: 201, message: "inadequate item details" });
     } else {
       let itemId = escapeHtml(req.body.itemId);
       let itemInStock = escapeHtml(req.body.itemInStock);
@@ -321,16 +314,251 @@ exports.updateItem = (req, res) => {
       let MRP = escapeHtml(req.body.price.MRP);
       let itemDescription = escapeHtml(req.body.itemDescription);
 
-      var myquery = { itemId: itemId};
-      var newvalues = { $set: {'itemInStock': itemInStock, 'itemImage': itemImage, 'itemUnit': itemUnit, 'sellingQuantity': sellingQuantity, 'sellingPrice': sellingPrice, 'price.$.MRP': MRP, 'itemDescription': itemDescription } };
+      var myquery = { itemId: itemId };
+      var newvalues = {
+        $set: {
+          itemInStock: itemInStock,
+          itemImage: itemImage,
+          itemUnit: itemUnit,
+          sellingQuantity: sellingQuantity,
+          sellingPrice: sellingPrice,
+          "price.$.MRP": MRP,
+          itemDescription: itemDescription,
+        },
+      };
 
-      Items.updateOne(myquery, newvalues, function(err, resa) {
+      Items.updateOne(myquery, newvalues, function (err, resa) {
         if (err) throw err;
         res.send({
           status: 200,
           msg: "Details updated",
         });
       });
+    }
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
+
+//shop profile update
+exports.updateShop = (req, res) => {
+  let header = req.get("AuthKey");
+  if (header == "asdfgh") {
+    if (
+      !req.body.ownerName ||
+      !req.body.contactNo ||
+      !req.body.shopImage ||
+      !req.body.email ||
+      !req.body.password ||
+      !req.body.shopName ||
+      !req.body.shopId
+    ) {
+      return res.send({ status: 201, message: "inadequate Owners data" });
+    } else if (
+      !req.body.shopTimings.sunday ||
+      !req.body.shopTimings.monday ||
+      !req.body.shopTimings.tuesday ||
+      !req.body.shopTimings.wednesday ||
+      !req.body.shopTimings.thursday ||
+      !req.body.shopTimings.friday ||
+      !req.body.shopTimings.saturday
+    ) {
+      res.send({ status: 201, message: "please check the timings" });
+    } else {
+      var regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
+      var validateemail = regEx.test(req.body.email);
+
+      var regEx3 = /^[6-9]\d{9}$/;
+      var validatecontact = regEx3.test(req.body.contactNo);
+
+      if (!validateemail || !validatecontact) {
+        res.send({ status: 201, message: "invalid email or contact number" });
+      } else {
+        let shopId = escapeHtml(req.body.shopId);
+        let ownerName = escapeHtml(req.body.ownerName);
+        let shopName = escapeHtml(req.body.shopName);
+        let email = escapeHtml(req.body.email);
+        let password = escapeHtml(req.body.password);
+        let contactNo = escapeHtml(req.body.contactNo);
+        let shopImage = escapeHtml(req.body.shopImage);
+        let latitude = escapeHtml(req.body.location.latitude);
+        let longitude = escapeHtml(req.body.location.longitude);
+        let locality = escapeHtml(req.body.shopAddress.locality);
+        let city = escapeHtml(req.body.shopAddress.city);
+        let state = escapeHtml(req.body.shopAddress.state);
+        let pincode = escapeHtml(req.body.shopAddress.pincode);
+        let addressLine = escapeHtml(req.body.shopAddress.addressLine);
+        let userGivenAddress = escapeHtml(
+          req.body.shopAddress.userGivenAddress
+        );
+        let timings = req.body.shopTimings;
+
+        VendorShop.find({
+          $or: [{ email: email }, { contactNo: contactNo }],
+        }).then((data) => {
+          if (data != "") {
+            if (
+              data[0].email == email &&
+              data[0].contactNo == contactNo &&
+              data[0].shopId != shopId
+            ) {
+              res.send({
+                status: 201,
+                message: "email id or contact number already existed!",
+              });
+            } else if (data[0].email == email && data[0].shopId != shopId) {
+              res.send({ status: 201, message: "email id already existed!" });
+            } else if (data[0].contactNo == contactNo && data[0].shopId != shopId) {
+              res.send({
+                status: 201,
+                message: "contact number already existed!",
+              });
+            }else{
+
+              var myquery = { shopId: shopId };
+              var newvalues = {
+                $set: {
+                  ownerName: ownerName,
+                  shopName: shopName,
+                  email: email,
+                  password: password,
+                  contactNo: contactNo,
+                  shopImage: shopImage,
+                  location: {
+                    latitude: latitude,
+                    longitude: longitude,
+                  },
+                  shopAddress: {
+                    locality: locality,
+                    city: city,
+                    state: state,
+                    pincode: pincode,
+                    addressLine: addressLine,
+                    userGivenAddress: userGivenAddress,
+                  },
+                  shopTimings: {
+                    monday: {
+                      status: timings.monday.status,
+                      shopOpeningTime: timings.monday.shopOpeningTime,
+                      shopClosingTime: timings.monday.shopClosingTime,
+                    },
+                    tuesday: {
+                      status: timings.tuesday.status,
+                      shopOpeningTime: timings.tuesday.shopOpeningTime,
+                      shopClosingTime: timings.tuesday.shopClosingTime,
+                    },
+                    wednesday: {
+                      status: timings.wednesday.status,
+                      shopOpeningTime: timings.wednesday.shopOpeningTime,
+                      shopClosingTime: timings.wednesday.shopClosingTime,
+                    },
+                    thursday: {
+                      status: timings.thursday.status,
+                      shopOpeningTime: timings.thursday.shopOpeningTime,
+                      shopClosingTime: timings.thursday.shopClosingTime,
+                    },
+                    friday: {
+                      status: timings.friday.status,
+                      shopOpeningTime: timings.friday.shopOpeningTime,
+                      shopClosingTime: timings.friday.shopClosingTime,
+                    },
+                    saturday: {
+                      status: timings.saturday.status,
+                      shopOpeningTime: timings.saturday.shopOpeningTime,
+                      shopClosingTime: timings.saturday.shopClosingTime,
+                    },
+                    sunday: {
+                      status: timings.sunday.status,
+                      shopOpeningTime: timings.sunday.shopOpeningTime,
+                      shopClosingTime: timings.sunday.shopClosingTime,
+                    },
+                  },
+                },
+              };
+  
+              VendorShop.updateOne(myquery, newvalues, function (err, resa) {
+                if (err) throw err;
+                res.send({
+                  status: 200,
+                  msg: "Profile updated",
+                });
+              });
+            
+              
+            }
+          } else {
+
+            var myquery = { shopId: shopId };
+            var newvalues = {
+              $set: {
+                ownerName: ownerName,
+                shopName: shopName,
+                email: email,
+                password: password,
+                contactNo: contactNo,
+                shopImage: shopImage,
+                location: {
+                  latitude: latitude,
+                  longitude: longitude,
+                },
+                shopAddress: {
+                  locality: locality,
+                  city: city,
+                  state: state,
+                  pincode: pincode,
+                  addressLine: addressLine,
+                  userGivenAddress: userGivenAddress,
+                },
+                shopTimings: {
+                  monday: {
+                    status: timings.monday.status,
+                    shopOpeningTime: timings.monday.shopOpeningTime,
+                    shopClosingTime: timings.monday.shopClosingTime,
+                  },
+                  tuesday: {
+                    status: timings.tuesday.status,
+                    shopOpeningTime: timings.tuesday.shopOpeningTime,
+                    shopClosingTime: timings.tuesday.shopClosingTime,
+                  },
+                  wednesday: {
+                    status: timings.wednesday.status,
+                    shopOpeningTime: timings.wednesday.shopOpeningTime,
+                    shopClosingTime: timings.wednesday.shopClosingTime,
+                  },
+                  thursday: {
+                    status: timings.thursday.status,
+                    shopOpeningTime: timings.thursday.shopOpeningTime,
+                    shopClosingTime: timings.thursday.shopClosingTime,
+                  },
+                  friday: {
+                    status: timings.friday.status,
+                    shopOpeningTime: timings.friday.shopOpeningTime,
+                    shopClosingTime: timings.friday.shopClosingTime,
+                  },
+                  saturday: {
+                    status: timings.saturday.status,
+                    shopOpeningTime: timings.saturday.shopOpeningTime,
+                    shopClosingTime: timings.saturday.shopClosingTime,
+                  },
+                  sunday: {
+                    status: timings.sunday.status,
+                    shopOpeningTime: timings.sunday.shopOpeningTime,
+                    shopClosingTime: timings.sunday.shopClosingTime,
+                  },
+                },
+              },
+            };
+
+            VendorShop.updateOne(myquery, newvalues, function (err, resa) {
+              if (err) throw err;
+              res.send({
+                status: 200,
+                msg: "Profile updated",
+              });
+            });
+          }
+        }); //update before here
+      } //till here
     }
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
