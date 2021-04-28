@@ -296,3 +296,43 @@ exports.itemdetail = (req, res) => {
 
   }
 };
+
+
+//item detail
+exports.updateItem = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    if (
+      !req.body.itemId ||
+      !req.body.itemInStock ||
+      !req.body.price ||
+      !req.body.itemImage ||
+      !req.body.itemUnit ||
+      !req.body.sellingQuantity
+    ) {
+      return res.send({status:201, message: "inadequate item details" });
+    } else {
+      let itemId = escapeHtml(req.body.itemId);
+      let itemInStock = escapeHtml(req.body.itemInStock);
+      let itemImage = escapeHtml(req.body.itemImage);
+      let itemUnit = escapeHtml(req.body.itemUnit);
+      let sellingQuantity = escapeHtml(req.body.sellingQuantity);
+      let sellingPrice = escapeHtml(req.body.price.sellingPrice);
+      let MRP = escapeHtml(req.body.price.MRP);
+      let itemDescription = escapeHtml(req.body.itemDescription);
+
+      var myquery = { itemId: itemId};
+      var newvalues = { $set: {'itemInStock': itemInStock, 'itemImage': itemImage, 'itemUnit': itemUnit, 'sellingQuantity': sellingQuantity, 'sellingPrice': sellingPrice, 'price.$.MRP': MRP, 'itemDescription': itemDescription } };
+
+      Items.updateOne(myquery, newvalues, function(err, resa) {
+        if (err) throw err;
+        res.send({
+          status: 200,
+          msg: "Details updated",
+        });
+      });
+    }
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
