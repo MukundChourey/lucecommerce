@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Decimal128 } = require('bson');
 
 const vendorSchema = mongoose.Schema({
     shopId: String,
@@ -18,8 +19,8 @@ const vendorSchema = mongoose.Schema({
         userGivenAddress: String
     },
     location: {
-        latitude: Number,
-        longitude: Number
+        latitude: Decimal128,
+        longitude: Decimal128
     },
     shopTimings: {
         monday : {
