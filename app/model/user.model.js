@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Decimal128 } = require('bson');
 
 const user = mongoose.Schema({
     userId: String,
@@ -18,11 +19,10 @@ const user = mongoose.Schema({
         city: String,
         state: String,
         pincode: Number,
-        addressLine: String,
-        userGivenAddress: String
+        addressLine: String
     },
     location: {
-        latitude: Number,
+        latitude: Decimal128,
         longitude: Number
     },
     accessToken: String,
