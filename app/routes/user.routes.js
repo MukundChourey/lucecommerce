@@ -8,6 +8,9 @@ module.exports = (app) => {
 
     //user login  
     app.post('/userLogin', user.login);
+    
+    //nearby shop lists
+    app.post('/listShops', user.listShops);
 
     //user order
     app.post('/order', user.order);
