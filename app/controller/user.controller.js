@@ -132,7 +132,7 @@ exports.register = (req, res) => {
               .save()
               .then((data) => {
                 res.send({
-                  status: 201,
+                  status: 200,
                   message: newuserid,
                 });
               })
