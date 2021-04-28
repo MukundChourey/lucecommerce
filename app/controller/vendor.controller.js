@@ -191,7 +191,7 @@ exports.register = (req, res) => {
               .save()
               .then((data) => {
                 res.send({
-                  status: 201,
+                  status: 200,
                   message: newshopid,
                 });
               })
@@ -257,7 +257,7 @@ exports.additem = (req, res) => {
         .save()
         .then((data) => {
           res.send({
-            status: 201,
+            status: 200,
             message: "success",
           });
         })
