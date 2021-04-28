@@ -15,7 +15,7 @@ exports.login = (req, res) => {
       let parameter = escapeHtml(req.body.parameter);
 
       User.findOne({
-        $or: [{ email: { $eq: parameter } }, { contact: { $eq: parameter } }],
+        $or: [{ email: { $eq: parameter } }, { contactNo: { $eq: parameter } }],
       })
         .then((note) => {
           if (!note) {
