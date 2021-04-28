@@ -10,6 +10,9 @@ module.exports = (app) => {
     //vendor register
     app.post('/shopRegister', vendorReg.register);
 
+    //update shop details
+    app.post('/updateShop', vendorReg.updateShop);
+
     //vendor login  
     app.post('/vendorLogin', vendorReg.login);
 
