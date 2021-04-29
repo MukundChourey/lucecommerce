@@ -349,7 +349,7 @@ exports.updateShop = (req, res) => {
       !req.body.contactNo ||
       !req.body.shopImage ||
       !req.body.email ||
-      !req.body.password ||
+      // !req.body.password ||
       !req.body.shopName ||
       !req.body.shopId
     ) {
@@ -378,7 +378,7 @@ exports.updateShop = (req, res) => {
         let ownerName = escapeHtml(req.body.ownerName);
         let shopName = escapeHtml(req.body.shopName);
         let email = escapeHtml(req.body.email);
-        let password = escapeHtml(req.body.password);
+        // let password = escapeHtml(req.body.password);
         let contactNo = escapeHtml(req.body.contactNo);
         let shopImage = escapeHtml(req.body.shopImage);
         let latitude = escapeHtml(req.body.location.latitude);
@@ -421,7 +421,7 @@ exports.updateShop = (req, res) => {
                   ownerName: ownerName,
                   shopName: shopName,
                   email: email,
-                  password: password,
+                  // password: password,
                   contactNo: contactNo,
                   shopImage: shopImage,
                   location: {
@@ -494,7 +494,7 @@ exports.updateShop = (req, res) => {
                 ownerName: ownerName,
                 shopName: shopName,
                 email: email,
-                password: password,
+                // password: password,
                 contactNo: contactNo,
                 shopImage: shopImage,
                 location: {
