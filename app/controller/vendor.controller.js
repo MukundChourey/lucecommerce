@@ -321,8 +321,10 @@ exports.updateItem = (req, res) => {
           itemImage: itemImage,
           itemUnit: itemUnit,
           sellingQuantity: sellingQuantity,
-          sellingPrice: sellingPrice,
-          "price.$.MRP": MRP,
+          price:{
+            sellingPrice : sellingPrice,
+            MRP: MRP
+          },
           itemDescription: itemDescription,
         },
       };
