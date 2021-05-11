@@ -1,5 +1,7 @@
 const User = require("../model/user.model.js");
 const VendorShop = require("../model/vendor.model.js");
+const Items = require("../model/items.model.js");
+const Orders = require("../model/orders.model.js");
 
 var escapeHtml = require("escape-html");
 var GeoPoint = require("geopoint");
@@ -201,9 +203,10 @@ exports.listShops = (req, res) => {
         shopLocation = new GeoPoint(lat2, long2);
 
         if (point1.distanceTo(shopLocation, true) <= dist) {
-        response.push({
-          distance: point1.distanceTo(shopLocation, true),
-          shopDetails: shop});
+          response.push({
+            distance: point1.distanceTo(shopLocation, true),
+            shopDetails: shop,
+          });
         }
       });
       res.send(response);
@@ -212,18 +215,105 @@ exports.listShops = (req, res) => {
 };
 
 exports.order = (req, res) => {
-  var Oslo = {
-    lat: 59.914,
-    lon: 10.752,
-  };
-  var Berlin = {
-    lat: 52.523,
-    lon: 13.412,
-  };
-  var OsloToBerlin = Distance.between(Oslo, Berlin);
+  let header = req.get("AuthKey");
+  if (header == "asdfgh") {
+    var itemId = req.body.itemId;
+    var shopId = req.body.shopId;
+    var amount = req.body.amount;
+    var userId = req.body.userId;
 
-  res.send({
-    status: 200,
-    msg: "" + OsloToBerlin.human_readable("customary"),
-  });
+    
+    var BreakException = {};
+
+    let query = { shopId: shopId };
+    VendorShop.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 200,
+          message: "No such shop found",
+        });
+      } else {
+        // res.send(data);
+        try{
+          var flag = 1;
+          var c=0;
+          itemId.forEach((element) => {
+            let query = { itemId: element };
+            Items.find(query).then((data) => {
+              if (data == "") {
+                flag = -1;
+                console.log("-1");
+                c++;
+                if(c == itemId.length-1){
+                  place();
+                }
+                throw BreakException;
+              } else if (data[0].shopId != shopId) {
+                flag = 0;
+                console.log("0");
+                c++;
+                if(c == itemId.length-1){
+                  place();
+                }
+                throw BreakException;
+              } else {
+                c++;
+                if(c == itemId.length-1){
+                  place();
+                }
+              }
+            });
+            
+          });
+        }catch(e){
+          if (e !== BreakException) throw e;
+        }
+        if(c == itemId.length-1){
+          place();
+        }
+        function place(){
+          if (flag == -1) {
+            res.send({
+              status: 200,
+              message: "No such item found",
+            });
+          } else if (flag == 0) {
+            res.send({
+              status: 200,
+              message: "All items should be from the same shop",
+            });
+          } else {
+            let d = new Date();
+            let n = d.getTime();
+            var orderId = "order"+ userId + n;
+  
+            const order = new Orders({
+              orderId: orderId,
+              itemId: itemId,
+              shopId: shopId,
+              status: "Pending",
+              amount: amount,
+              userId : userId
+            });
+  
+            order
+              .save()
+              .then((data) => {
+                res.send({
+                  status: 200,
+                  message: "Order Placed",
+                });
+              })
+              .catch((err) => {
+                res.send({
+                  status: 201,
+                  message: err.message || "Some error occured",
+                });
+              });
+          }
+        }
+        
+      }
+    });
+  }
 };
