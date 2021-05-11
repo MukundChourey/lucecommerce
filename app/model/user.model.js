@@ -11,8 +11,8 @@ const user = mongoose.Schema({
 
     },
     orders: {
-        inProcess:{},
-        completed:{}
+        inProcess:Array,
+        completed:Array
     },
     address:{       
         locality: String,
