@@ -190,7 +190,7 @@ exports.listShops = (req, res) => {
   //   });
   // };
 
-  VendorShop.find({}).then((data) => {
+  VendorShop.find({},{"password" : 0}).then((data) => {
     if (data == "") {
       res.send({
         status: 201,
