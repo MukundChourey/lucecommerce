@@ -410,13 +410,15 @@ exports.updateShop = (req, res) => {
               });
             } else if (data[0].email == email && data[0].shopId != shopId) {
               res.send({ status: 201, message: "email id already existed!" });
-            } else if (data[0].contactNo == contactNo && data[0].shopId != shopId) {
+            } else if (
+              data[0].contactNo == contactNo &&
+              data[0].shopId != shopId
+            ) {
               res.send({
                 status: 201,
                 message: "contact number already existed!",
               });
-            }else{
-
+            } else {
               var myquery = { shopId: shopId };
               var newvalues = {
                 $set: {
@@ -477,7 +479,7 @@ exports.updateShop = (req, res) => {
                   },
                 },
               };
-  
+
               VendorShop.updateOne(myquery, newvalues, function (err, resa) {
                 if (err) throw err;
                 res.send({
@@ -485,11 +487,8 @@ exports.updateShop = (req, res) => {
                   msg: "Profile updated",
                 });
               });
-            
-              
             }
           } else {
-
             var myquery = { shopId: shopId };
             var newvalues = {
               $set: {
