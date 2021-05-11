@@ -283,6 +283,7 @@ exports.order = (req, res) => {
               message: "All items should be from the same shop",
             });
           } else {
+            //---------------------users aur vendors ke db me add karne ke liye data ka code idhar likh dena
             let d = new Date();
             let n = d.getTime();
             var orderId = "order"+ userId + n;
