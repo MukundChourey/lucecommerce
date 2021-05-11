@@ -123,6 +123,7 @@ const vendorSchema = mongoose.Schema({
         },
         
     },
+    orders: Array,
     accessToken: String,
         
     }, {
