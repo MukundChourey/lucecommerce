@@ -318,3 +318,27 @@ exports.order = (req, res) => {
     });
   }
 };
+
+exports.orderList = (req,res) => {
+  let header = req.get('Authkey');
+  if (header == "asdfgh") {
+
+    let userId = req.body.userId;
+    var query = { userId: userId };
+    Orders.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 200,
+          message: "No current orders",
+        });
+      } else {
+        res.send({
+          status: 200,
+          data: data,
+        });
+      }
+    });
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });    
+  }
+};
