@@ -597,17 +597,18 @@ exports.acceptOrder = (req,res) => {
   if (header == "asdfgh") {
 
     let orderId = req.body.orderId;
+    let decision = req.body.decision;
     var myquery = { orderId: orderId };
     var newvalue = {
       $set: {
-        status : "Accepted"
+        status : decision
       }
     }
     Orders.updateOne(myquery, newvalue, function (err, resa) {
       if (err) throw err;
       res.send({
         status: 200,
-        msg: "Order Accepted",
+        msg: "Order " + decision,
       });
     });
   } else {
