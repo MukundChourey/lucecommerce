@@ -1,5 +1,6 @@
 const VendorShop = require("../model/vendor.model.js");
 const Items = require("../model/items.model.js");
+const Orders = require("../model/orders.model.js");
 var escapeHtml = require("escape-html");
 
 //login
@@ -545,9 +546,9 @@ exports.updateShop = (req, res) => {
                     status: timings.sunday.status,
                     shopOpeningTime: timings.sunday.shopOpeningTime,
                     shopClosingTime: timings.sunday.shopClosingTime,
-                  },
-                },
-              },
+                  }
+                }
+              }
             };
 
             VendorShop.updateOne(myquery, newvalues, function (err, resa) {
@@ -563,5 +564,53 @@ exports.updateShop = (req, res) => {
     }
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
+
+exports.orderList = (req,res) => {
+  let header = req.get('Authkey');
+  if (header == "asdfgh") {
+
+    let shopId = req.body.shopId;
+    var query = { shopId: shopId };
+    Orders.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 200,
+          message: "No past orders",
+        });
+      } else {
+        res.send({
+          status: 200,
+          data: data,
+        });
+      }
+    });
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });    
+  }
+};
+
+
+exports.acceptOrder = (req,res) => {
+  let header = req.get('Authkey');
+  if (header == "asdfgh") {
+
+    let orderId = req.body.orderId;
+    var myquery = { orderId: orderId };
+    var newvalue = {
+      $set: {
+        status : "Accepted"
+      }
+    }
+    Orders.updateOne(myquery, newvalue, function (err, resa) {
+      if (err) throw err;
+      res.send({
+        status: 200,
+        msg: "Order Accepted",
+      });
+    });
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });    
   }
 };
