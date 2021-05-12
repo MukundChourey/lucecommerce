@@ -29,7 +29,7 @@ module.exports = (app) => {
     app.post('/orderList', vendorReg.orderList);
 
     //accept order
-    app.post('/acceptOrder', vendorReg.acceptOrder);
+    app.post('/processOrder', vendorReg.processOrder);
 
     
 
