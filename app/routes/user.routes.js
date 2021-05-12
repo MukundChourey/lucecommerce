@@ -14,6 +14,9 @@ module.exports = (app) => {
 
     //user order
     app.post('/order', user.order);
+
+    //check user order details
+    app.post('/ordersPlaced', user.orderList);
     
 
 }
