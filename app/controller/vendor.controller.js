@@ -592,7 +592,7 @@ exports.orderList = (req,res) => {
 };
 
 
-exports.acceptOrder = (req,res) => {
+exports.processOrder = (req,res) => {
   let header = req.get('Authkey');
   if (header == "asdfgh") {
 
