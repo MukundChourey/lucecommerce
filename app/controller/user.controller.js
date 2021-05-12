@@ -342,3 +342,26 @@ exports.orderList = (req,res) => {
     res.send({ status: 201, message: "Your aren't authorized" });    
   }
 };
+
+exports.orderCancel = (req,res) => {
+  let header = req.get('Authkey');
+  if (header == "asdfgh") {
+
+    let orderId = req.body.orderId;
+    var myquery = { orderId: orderId };
+    var newvalue = {
+      $set: {
+        status : "Cancelled"
+      }
+    }
+    Orders.updateOne(myquery, newvalue, function (err, resa) {
+      if (err) throw err;
+      res.send({
+        status: 200,
+        msg: "Order Cancelled",
+      });
+    });
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });    
+  }
+};
