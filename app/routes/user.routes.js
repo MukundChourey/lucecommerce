@@ -17,6 +17,9 @@ module.exports = (app) => {
 
     //check user order details
     app.post('/ordersPlaced', user.orderList);
+
+    //user side order cancellation
+    app.post('/orderCancel', user.orderCancel);
     
 
 }
