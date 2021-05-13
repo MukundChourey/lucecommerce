@@ -1,6 +1,7 @@
 const VendorShop = require("../model/vendor.model.js");
 const Items = require("../model/items.model.js");
 const Orders = require("../model/orders.model.js");
+const User = require("../model/user.model.js");
 var escapeHtml = require("escape-html");
 
 //login
@@ -73,7 +74,8 @@ exports.register = (req, res) => {
     ) {
       res.send({ status: 201, message: "please check the timings" });
     } else {
-      var regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
+      var regEx =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
       var validateemail = regEx.test(req.body.email);
 
       var regEx3 = /^[6-9]\d{9}$/;
@@ -322,9 +324,9 @@ exports.updateItem = (req, res) => {
           itemImage: itemImage,
           itemUnit: itemUnit,
           sellingQuantity: sellingQuantity,
-          price:{
-            sellingPrice : sellingPrice,
-            MRP: MRP
+          price: {
+            sellingPrice: sellingPrice,
+            MRP: MRP,
           },
           itemDescription: itemDescription,
         },
@@ -368,7 +370,8 @@ exports.updateShop = (req, res) => {
     ) {
       res.send({ status: 201, message: "please check the timings" });
     } else {
-      var regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
+      var regEx =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
       var validateemail = regEx.test(req.body.email);
 
       var regEx3 = /^[6-9]\d{9}$/;
@@ -546,9 +549,9 @@ exports.updateShop = (req, res) => {
                     status: timings.sunday.status,
                     shopOpeningTime: timings.sunday.shopOpeningTime,
                     shopClosingTime: timings.sunday.shopClosingTime,
-                  }
-                }
-              }
+                  },
+                },
+              },
             };
 
             VendorShop.updateOne(myquery, newvalues, function (err, resa) {
@@ -567,10 +570,9 @@ exports.updateShop = (req, res) => {
   }
 };
 
-exports.orderList = (req,res) => {
-  let header = req.get('Authkey');
+exports.orderList = (req, res) => {
+  let header = req.get("Authkey");
   if (header == "asdfgh") {
-
     let shopId = req.body.shopId;
     var query = { shopId: shopId };
     Orders.find(query).then((data) => {
@@ -587,23 +589,21 @@ exports.orderList = (req,res) => {
       }
     });
   } else {
-    res.send({ status: 201, message: "Your aren't authorized" });    
+    res.send({ status: 201, message: "Your aren't authorized" });
   }
 };
 
-
-exports.processOrder = (req,res) => {
-  let header = req.get('Authkey');
+exports.processOrder = (req, res) => {
+  let header = req.get("Authkey");
   if (header == "asdfgh") {
-
     let orderId = req.body.orderId;
     let decision = req.body.decision;
     var myquery = { orderId: orderId };
     var newvalue = {
       $set: {
-        status : decision
-      }
-    }
+        status: decision,
+      },
+    };
     Orders.updateOne(myquery, newvalue, function (err, resa) {
       if (err) throw err;
       res.send({
@@ -612,6 +612,49 @@ exports.processOrder = (req,res) => {
       });
     });
   } else {
-    res.send({ status: 201, message: "Your aren't authorized" });    
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
+
+exports.orderDetails = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    let itemId = req.body.itemId;
+    let userId = req.body.userId;
+
+    var response = {
+      itemdetails : [],
+      userdetails : {}
+    };
+    var c = 0;
+    var len = itemId.length;
+    // console.log("len item: " + len);
+    itemId.forEach((element) => {
+      // console.log("finding");
+      var query = { itemId: element };
+      Items.find(query).then((data) => {
+        response.itemdetails.push(data);
+        c++;
+        // console.log("c value: " + c);
+        if (c == len) {
+          userdet(userId);
+        }
+      });
+    });
+    userdet(userId);
+    function userdet(userId) {
+      query2 = { userId: userId };
+      User.find(query2,{ password: 0}).then((data) => {
+        response.userdetails = data;
+        res.send({
+          status: 200,
+          msg: response,
+        });
+      });
+      
+    }
+    
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
   }
 };
