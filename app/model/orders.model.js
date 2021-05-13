@@ -2,7 +2,15 @@ const mongoose = require('mongoose');
 
 const orders = mongoose.Schema({
     orderId: String,
-    itemId: Array,
+    itemDetails: Array,
+    custName : String,
+    address:{       
+        locality: String,
+        city: String,
+        state: String,
+        pincode: Number,
+        addressLine: String
+    },
     shopId: String,
     status: String,
     amount: Number,
