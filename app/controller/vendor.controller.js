@@ -644,7 +644,7 @@ exports.orderDetails = (req, res) => {
     userdet(userId);
     function userdet(userId) {
       query2 = { userId: userId };
-      User.find(query2,{ password: 0}).then((data) => {
+      User.find(query2,{ password: 0, orders: 0}).then((data) => {
         response.userdetails = data;
         res.send({
           status: 200,
