@@ -68,7 +68,8 @@ exports.register = (req, res) => {
     ) {
       return res.send({ status: 201, message: "inadequate Owners data" });
     } else {
-      var regEx = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
+      var regEx =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+[\.](?:[a-zA-Z0-9-]+)*$/;
       var validateemail = regEx.test(req.body.email);
 
       var regEx3 = /^[6-9]\d{9}$/;
@@ -190,7 +191,7 @@ exports.listShops = (req, res) => {
   //   });
   // };
 
-  VendorShop.find({},{"password" : 0}).then((data) => {
+  VendorShop.find({}, { password: 0 }).then((data) => {
     if (data == "") {
       res.send({
         status: 201,
@@ -217,112 +218,128 @@ exports.listShops = (req, res) => {
 exports.order = (req, res) => {
   let header = req.get("AuthKey");
   if (header == "asdfgh") {
-    var itemId = req.body.itemId;
-    var shopId = req.body.shopId;
-    var amount = req.body.amount;
-    var userId = req.body.userId;
+    if (
+      !req.body.custName ||
+      !req.body.shopId ||
+      !req.body.userId ||
+      !req.body.amount ||
+      !req.body.address.locality ||
+      !req.body.address.city ||
+      !req.body.address.state ||
+      !req.body.address.pincode ||
+      !req.body.address.addressLine
+    ) {
+      return res.send({ status: 201, message: "inadequate data" });
+    } else {
+      var itemDetails = req.body.itemDetails;
+      var shopId = req.body.shopId;
+      var amount = req.body.amount;
+      var userId = req.body.userId;
+      var custName = req.body.custName;
+      var address = req.body.address;
 
-    
-    var BreakException = {};
+      var BreakException = {};
 
-    let query = { shopId: shopId };
-    VendorShop.find(query).then((data) => {
-      if (data == "") {
-        res.send({
-          status: 200,
-          message: "No such shop found",
-        });
-      } else {
-        // res.send(data);
-        try{
-          var flag = 1;
-          var c=0;
-          itemId.forEach((element) => {
-            let query = { itemId: element };
-            Items.find(query).then((data) => {
-              if (data == "") {
-                flag = -1;
-                console.log("-1");
-                c++;
-                if(c == itemId.length-1){
-                  place();
-                }
-                throw BreakException;
-              } else if (data[0].shopId != shopId) {
-                flag = 0;
-                console.log("0");
-                c++;
-                if(c == itemId.length-1){
-                  place();
-                }
-                throw BreakException;
-              } else {
-                c++;
-                if(c == itemId.length-1){
-                  place();
-                }
-              }
-            });
-            
+      let query = { shopId: shopId };
+      VendorShop.find(query).then((data) => {
+        if (data == "") {
+          res.send({
+            status: 200,
+            message: "No such shop found",
           });
-        }catch(e){
-          if (e !== BreakException) throw e;
-        }
-        if(c == itemId.length-1){
-          place();
-        }
-        function place(){
-          if (flag == -1) {
-            res.send({
-              status: 200,
-              message: "No such item found",
-            });
-          } else if (flag == 0) {
-            res.send({
-              status: 200,
-              message: "All items should be from the same shop",
-            });
-          } else {
-            //---------------------users aur vendors ke db me add karne ke liye data ka code idhar likh dena
-            let d = new Date();
-            let n = d.getTime();
-            var orderId = "order"+ userId + n;
-  
-            const order = new Orders({
-              orderId: orderId,
-              itemId: itemId,
-              shopId: shopId,
-              status: "Pending",
-              amount: amount,
-              userId : userId
-            });
-  
-            order
-              .save()
-              .then((data) => {
-                res.send({
-                  status: 200,
-                  message: "Order Placed",
-                });
-              })
-              .catch((err) => {
-                res.send({
-                  status: 201,
-                  message: err.message || "Some error occured",
-                });
+        } else {
+          // res.send(data);
+          try {
+            var flag = 1;
+            var c = 0;
+            console.log(itemDetails.length);
+            itemDetails.forEach((element) => {
+              let query = { itemId: element.id };
+              Items.find(query).then((data) => {
+                if (data == "") {
+                  flag = -1;
+                  console.log("-1");
+                  c++;
+                  if (c == itemDetails.length) {
+                    place();
+                  }
+                  throw BreakException;
+                } else if (data[0].shopId != shopId) {
+                  flag = 0;
+                  console.log("0");
+                  c++;
+                  if (c == itemDetails.length) {
+                    place();
+                  }
+                  throw BreakException;
+                } else {
+                  c++;
+                  console.log("c value: " + c);
+                  if (c == itemDetails.length - 1) {
+                    place();
+                  }
+                }
               });
+            });
+          } catch (e) {
+            if (e !== BreakException) throw e;
+          }
+          if (c == itemDetails.length) {
+            place();
+          }
+          function place() {
+            if (flag == -1) {
+              res.send({
+                status: 200,
+                message: "No such item found",
+              });
+            } else if (flag == 0) {
+              res.send({
+                status: 200,
+                message: "All items should be from the same shop",
+              });
+            } else {
+              //---------------------users aur vendors ke db me add karne ke liye data ka code idhar likh dena
+              let d = new Date();
+              let n = d.getTime();
+              var orderId = "order" + userId + n;
+
+              const order = new Orders({
+                orderId: orderId,
+                itemDetails: itemDetails,
+                custName: custName,
+                address: address,
+                shopId: shopId,
+                status: "Pending",
+                amount: amount,
+                userId: userId,
+              });
+
+              order
+                .save()
+                .then((data) => {
+                  res.send({
+                    status: 200,
+                    message: "Order Placed",
+                  });
+                })
+                .catch((err) => {
+                  res.send({
+                    status: 201,
+                    message: err.message || "Some error occured",
+                  });
+                });
+            }
           }
         }
-        
-      }
-    });
+      });
+    }
   }
 };
 
-exports.orderList = (req,res) => {
-  let header = req.get('Authkey');
+exports.orderList = (req, res) => {
+  let header = req.get("Authkey");
   if (header == "asdfgh") {
-
     let userId = req.body.userId;
     var query = { userId: userId };
     Orders.find(query).then((data) => {
@@ -339,21 +356,20 @@ exports.orderList = (req,res) => {
       }
     });
   } else {
-    res.send({ status: 201, message: "Your aren't authorized" });    
+    res.send({ status: 201, message: "Your aren't authorized" });
   }
 };
 
-exports.orderCancel = (req,res) => {
-  let header = req.get('Authkey');
+exports.orderCancel = (req, res) => {
+  let header = req.get("Authkey");
   if (header == "asdfgh") {
-
     let orderId = req.body.orderId;
     var myquery = { orderId: orderId };
     var newvalue = {
       $set: {
-        status : "Cancelled"
-      }
-    }
+        status: "Cancelled",
+      },
+    };
     Orders.updateOne(myquery, newvalue, function (err, resa) {
       if (err) throw err;
       res.send({
@@ -362,6 +378,6 @@ exports.orderCancel = (req,res) => {
       });
     });
   } else {
-    res.send({ status: 201, message: "Your aren't authorized" });    
+    res.send({ status: 201, message: "Your aren't authorized" });
   }
 };
