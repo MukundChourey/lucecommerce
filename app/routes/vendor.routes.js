@@ -25,8 +25,11 @@ module.exports = (app) => {
     //update vendor item details
     app.post('/updateItem', vendorReg.updateItem);
 
-    //check vendor order details
+    //check vendor order lists
     app.post('/orderList', vendorReg.orderList);
+
+    //check vendor order details
+    app.post('/orderdetails', vendorReg.orderDetails);
 
     //accept order
     app.post('/processOrder', vendorReg.processOrder);
