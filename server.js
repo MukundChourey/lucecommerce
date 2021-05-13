@@ -30,7 +30,7 @@ mongoose.connect(dbConfig.url, {
 
 app.use(function (req, res, next) {
 
-    console.log("secure");
+    // console.log("secure");
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 
