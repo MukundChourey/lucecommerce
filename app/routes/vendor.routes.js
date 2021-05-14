@@ -10,6 +10,9 @@ module.exports = (app) => {
     //vendor register
     app.post('/shopRegister', vendorReg.register);
 
+    //update shop details
+    app.post('/updateShop', vendorReg.updateShop);
+
     //vendor login  
     app.post('/vendorLogin', vendorReg.login);
 
@@ -18,6 +21,18 @@ module.exports = (app) => {
 
     //vendor item details
     app.post('/itemDetail', vendorReg.itemdetail);
+
+    //update vendor item details
+    app.post('/updateItem', vendorReg.updateItem);
+
+    //check vendor order lists
+    app.post('/orderList', vendorReg.orderList);
+
+    //check vendor order details
+    app.post('/orderdetails', vendorReg.orderDetails);
+
+    //accept order
+    app.post('/processOrder', vendorReg.processOrder);
 
     
 
