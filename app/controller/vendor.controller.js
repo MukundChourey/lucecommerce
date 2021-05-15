@@ -281,7 +281,7 @@ exports.itemdetail = (req, res) => {
     Items.find(query).then((data) => {
       if (data == "") {
         res.send({
-          status: 200,
+          status: 201,
           message: "No item added yet",
         });
       } else {
@@ -578,7 +578,7 @@ exports.orderList = (req, res) => {
     Orders.find(query).then((data) => {
       if (data == "") {
         res.send({
-          status: 200,
+          status: 201,
           message: "No past orders",
         });
       } else {
@@ -608,7 +608,7 @@ exports.processOrder = (req, res) => {
       if (err) throw err;
       res.send({
         status: 200,
-        msg: "Order " + decision,
+        data: "Order " + decision,
       });
     });
   } else {
@@ -648,7 +648,7 @@ exports.orderDetails = (req, res) => {
         response.userdetails = data;
         res.send({
           status: 200,
-          msg: response,
+          data: response,
         });
       });
       
