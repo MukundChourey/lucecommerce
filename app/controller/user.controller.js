@@ -364,19 +364,39 @@ exports.orderCancel = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
     let orderId = req.body.orderId;
-    var myquery = { orderId: orderId };
-    var newvalue = {
-      $set: {
-        status: "Cancelled",
-      },
-    };
-    Orders.updateOne(myquery, newvalue, function (err, resa) {
-      if (err) throw err;
-      res.send({
-        status: 200,
-        msg: "Order Cancelled",
-      });
+
+    Orders.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 200,
+          message: "No such order",
+        });
+      } else {
+        if(data.status=="Pending"){
+          var myquery = { orderId: orderId };
+          var newvalue = {
+            $set: {
+              status: "Cancelled",
+            },
+          };
+          Orders.updateOne(myquery, newvalue, function (err, resa) {
+            if (err) throw err;
+            res.send({
+              status: 200,
+              msg: "Order Cancelled",
+            });
+          });
+        }else{
+          res.send({
+            status: 200,
+            msg: "Can't cancel the order after it's accepted.",
+          });
+        }
+      }
     });
+
+
+    
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
