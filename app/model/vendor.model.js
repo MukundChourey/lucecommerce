@@ -22,7 +22,7 @@ const vendorSchema = mongoose.Schema({
         latitude: Decimal128,
         longitude: Decimal128
     },
-    counterTotal:{
+    totalCounter:{
         date: Date,
         counter: Number
     },
@@ -128,7 +128,6 @@ const vendorSchema = mongoose.Schema({
         },
         
     },
-    orders: Array,
     accessToken: String,
         
     }, {
