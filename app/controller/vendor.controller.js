@@ -133,7 +133,11 @@ exports.register = (req, res) => {
               password: password,
               contactNo: contactNo,
               shopType: shopType,
-              shopImage: shopImage,
+              shopImage: shopImage,              
+              totalCounter: {
+                date: new Date(),
+                counter: 0
+              },
               location: {
                 latitude: latitude,
                 longitude: longitude,
@@ -641,7 +645,7 @@ exports.orderDetails = (req, res) => {
         }
       });
     });
-    userdet(userId);
+    // userdet(userId);
     function userdet(userId) {
       query2 = { userId: userId };
       User.find(query2,{ password: 0, orders: 0}).then((data) => {
