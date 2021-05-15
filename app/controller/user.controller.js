@@ -215,6 +215,28 @@ exports.listShops = (req, res) => {
   });
 };
 
+
+exports.showItems = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    let shopId = escapeHtml(req.body.shopId);
+    var query = { shopId: shopId };
+    Items.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 201,
+          message: "No item added yet",
+        });
+      } else {
+        res.send({
+          status: 200,
+          data: data,
+        });
+      }
+    });
+  }
+};
+
 exports.order = (req, res) => {
   let header = req.get("AuthKey");
   if (header == "asdfgh") {
