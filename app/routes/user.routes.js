@@ -12,6 +12,9 @@ module.exports = (app) => {
     //nearby shop lists
     app.post('/listShops', user.listShops);
 
+    //user item details
+    app.post('/showItems', user.showItems);
+
     //user order
     app.post('/order', user.order);
 
