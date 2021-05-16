@@ -220,25 +220,32 @@ exports.showItems = (req, res) => {
   if (header == "asdfgh") {
     let userId = escapeHtml(req.body.userId);
     let shopId = escapeHtml(req.body.shopId);
-    var query = { shopId: shopId };
 
+    var query = { shopId: shopId };
     VendorShop.findOne({ shopId: shopId }).then(function (data) {
+      var lastDate = data.totalCounter.date;
+      var today = new Date();
+      if (today.getDate() > lastDate.getDate()) {
+        VendorShop.updateOne(
+          query,
+          { $set: { todayCounter: [] } },
+          function (err, resa) {}
+        );
+      }
       if (data.todayCounter.includes(userId)) {
-        ;
       } else {
-        var myquery = { shopId: shopId };
         var newvalue = {
           $push: {
             todayCounter: userId,
           },
-           $inc: {
-            'totalCounter.counter': 1 
+          $inc: {
+            "totalCounter.counter": 1,
           },
           $set: {
-            'totalCounter.date': new Date()
-          }
+            "totalCounter.date": today,
+          },
         };
-        VendorShop.updateOne(myquery, newvalue, function (err, resa) {
+        VendorShop.updateOne(query, newvalue, function (err, resa) {
           if (err) throw err;
         });
       }
