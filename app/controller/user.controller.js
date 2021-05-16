@@ -215,12 +215,35 @@ exports.listShops = (req, res) => {
   });
 };
 
-
 exports.showItems = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
+    let userId = escapeHtml(req.body.userId);
     let shopId = escapeHtml(req.body.shopId);
     var query = { shopId: shopId };
+
+    VendorShop.findOne({ shopId: shopId }).then(function (data) {
+      if (data.todayCounter.includes(userId)) {
+        ;
+      } else {
+        var myquery = { shopId: shopId };
+        var newvalue = {
+          $push: {
+            todayCounter: userId,
+          },
+           $inc: {
+            'totalCounter.counter': 1 
+          },
+          $set: {
+            'totalCounter.date': new Date()
+          }
+        };
+        VendorShop.updateOne(myquery, newvalue, function (err, resa) {
+          if (err) throw err;
+        });
+      }
+    });
+
     Items.find(query).then((data) => {
       if (data == "") {
         res.send({
@@ -394,7 +417,7 @@ exports.orderCancel = (req, res) => {
           message: "No such order",
         });
       } else {
-        if(data.status=="Pending"){
+        if (data.status == "Pending") {
           var myquery = { orderId: orderId };
           var newvalue = {
             $set: {
@@ -408,7 +431,7 @@ exports.orderCancel = (req, res) => {
               msg: "Order Cancelled",
             });
           });
-        }else{
+        } else {
           res.send({
             status: 200,
             msg: "Can't cancel the order after it's accepted.",
@@ -416,9 +439,6 @@ exports.orderCancel = (req, res) => {
         }
       }
     });
-
-
-    
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
