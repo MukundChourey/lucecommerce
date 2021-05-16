@@ -662,3 +662,27 @@ exports.orderDetails = (req, res) => {
     res.send({ status: 201, message: "Your aren't authorized" });
   }
 };
+
+
+exports.profileVisits = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    let shopId = req.body.shopId;
+    var query = { shopId: shopId };
+    VendorShop.find(query,{todayCounter: 1, totalCounter: 1}).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 201,
+          message: "Invalid shop Id sent",
+        });
+      } else {
+        res.send({
+          status: 200,
+          data: data,
+        });
+      }
+    });
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
