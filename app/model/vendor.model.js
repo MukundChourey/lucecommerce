@@ -22,6 +22,11 @@ const vendorSchema = mongoose.Schema({
         latitude: Decimal128,
         longitude: Decimal128
     },
+    totalCounter:{
+        date: Date,
+        counter: Number
+    },
+    todayCounter: Array,
     shopTimings: {
         monday : {
             status:{
@@ -123,7 +128,6 @@ const vendorSchema = mongoose.Schema({
         },
         
     },
-    orders: Array,
     accessToken: String,
         
     }, {

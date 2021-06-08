@@ -133,7 +133,11 @@ exports.register = (req, res) => {
               password: password,
               contactNo: contactNo,
               shopType: shopType,
-              shopImage: shopImage,
+              shopImage: shopImage,              
+              totalCounter: {
+                date: new Date(),
+                counter: 0
+              },
               location: {
                 latitude: latitude,
                 longitude: longitude,
@@ -281,7 +285,7 @@ exports.itemdetail = (req, res) => {
     Items.find(query).then((data) => {
       if (data == "") {
         res.send({
-          status: 200,
+          status: 201,
           message: "No item added yet",
         });
       } else {
@@ -578,7 +582,7 @@ exports.orderList = (req, res) => {
     Orders.find(query).then((data) => {
       if (data == "") {
         res.send({
-          status: 200,
+          status: 201,
           message: "No past orders",
         });
       } else {
@@ -608,7 +612,7 @@ exports.processOrder = (req, res) => {
       if (err) throw err;
       res.send({
         status: 200,
-        msg: "Order " + decision,
+        data: "Order " + decision,
       });
     });
   } else {
@@ -641,19 +645,43 @@ exports.orderDetails = (req, res) => {
         }
       });
     });
-    userdet(userId);
+    // userdet(userId);
     function userdet(userId) {
       query2 = { userId: userId };
       User.find(query2,{ password: 0, orders: 0}).then((data) => {
         response.userdetails = data;
         res.send({
           status: 200,
-          msg: response,
+          data: response,
         });
       });
       
     }
     
+  } else {
+    res.send({ status: 201, message: "Your aren't authorized" });
+  }
+};
+
+
+exports.profileVisits = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    let shopId = req.body.shopId;
+    var query = { shopId: shopId };
+    VendorShop.find(query,{todayCounter: 1, totalCounter: 1}).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 201,
+          message: "Invalid shop Id sent",
+        });
+      } else {
+        res.send({
+          status: 200,
+          data: data,
+        });
+      }
+    });
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
   }

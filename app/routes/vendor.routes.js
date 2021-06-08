@@ -34,6 +34,9 @@ module.exports = (app) => {
     //accept order
     app.post('/processOrder', vendorReg.processOrder);
 
+    //check vendor profile visits
+    app.post('/profileVisits', vendorReg.profileVisits);
+
     
 
 }

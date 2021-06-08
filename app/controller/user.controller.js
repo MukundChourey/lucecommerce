@@ -11,7 +11,7 @@ exports.login = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
     if (!req.body.parameter || !req.body.password) {
-      return res.send({ status: 201, message: "inadequate login data" });
+      return res.send({ status: 201, message: "Inadequate Login Data" });
     } else {
       let password = escapeHtml(req.body.password);
       let parameter = escapeHtml(req.body.parameter);
@@ -23,7 +23,7 @@ exports.login = (req, res) => {
           if (!note) {
             return res.status(201).send({
               status: 201,
-              message: "No user with these data exist",
+              message: "No user with this data exist",
             });
           } else {
             if (password == note.password) {
@@ -42,7 +42,7 @@ exports.login = (req, res) => {
         .catch((err) => {
           return res.status(201).send({
             status: 201,
-            message: "there was an error",
+            message: "Error occurred",
           });
         });
     }
@@ -76,7 +76,7 @@ exports.register = (req, res) => {
       var validatecontact = regEx3.test(req.body.contactNo);
 
       if (!validateemail || !validatecontact) {
-        res.send({ status: 201, message: "invalid email or contact number" });
+        res.send({ status: 201, message: "Invalid Email or Contact Number" });
       } else {
         // let shopId = escapeHtml(req.body.shopId);
         let userName = escapeHtml(req.body.ownerName);
@@ -98,14 +98,14 @@ exports.register = (req, res) => {
             if (data[0].email == email && data[0].contactNo == contactNo) {
               res.send({
                 status: 201,
-                message: "email id and contact number already existed!",
+                message: "Email Id and Contact Number Already Existed!",
               });
             } else if (data[0].email == email) {
-              res.send({ status: 201, message: "email id already existed!" });
+              res.send({ status: 201, message: "Email Id Already Existed!" });
             } else if (data[0].contactNo == contactNo) {
               res.send({
                 status: 201,
-                message: "contact number already existed!",
+                message: "Contact Number Already Existed!",
               });
             }
           } else {
@@ -213,6 +213,58 @@ exports.listShops = (req, res) => {
       res.send(response);
     }
   });
+};
+
+exports.showItems = (req, res) => {
+  let header = req.get("Authkey");
+  if (header == "asdfgh") {
+    let userId = escapeHtml(req.body.userId);
+    let shopId = escapeHtml(req.body.shopId);
+
+    var query = { shopId: shopId };
+    VendorShop.findOne({ shopId: shopId }).then(function (data) {
+      var lastDate = data.totalCounter.date;
+      var today = new Date();
+      if (today.getDate() > lastDate.getDate()) {
+        VendorShop.updateOne(
+          query,
+          { $set: { todayCounter: [] } },
+          function (err, resa) {}
+        );
+      }
+      if (data.todayCounter.includes(userId)) {
+      } else {
+        var newvalue = {
+          $push: {
+            todayCounter: userId,
+          },
+          $inc: {
+            "totalCounter.counter": 1,
+          },
+          $set: {
+            "totalCounter.date": today,
+          },
+        };
+        VendorShop.updateOne(query, newvalue, function (err, resa) {
+          if (err) throw err;
+        });
+      }
+    });
+
+    Items.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 201,
+          message: "No item added yet",
+        });
+      } else {
+        res.send({
+          status: 200,
+          data: data,
+        });
+      }
+    });
+  }
 };
 
 exports.order = (req, res) => {
@@ -364,18 +416,35 @@ exports.orderCancel = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
     let orderId = req.body.orderId;
-    var myquery = { orderId: orderId };
-    var newvalue = {
-      $set: {
-        status: "Cancelled",
-      },
-    };
-    Orders.updateOne(myquery, newvalue, function (err, resa) {
-      if (err) throw err;
-      res.send({
-        status: 200,
-        msg: "Order Cancelled",
-      });
+
+    Orders.find(query).then((data) => {
+      if (data == "") {
+        res.send({
+          status: 200,
+          message: "No such order",
+        });
+      } else {
+        if (data.status == "Pending") {
+          var myquery = { orderId: orderId };
+          var newvalue = {
+            $set: {
+              status: "Cancelled",
+            },
+          };
+          Orders.updateOne(myquery, newvalue, function (err, resa) {
+            if (err) throw err;
+            res.send({
+              status: 200,
+              msg: "Order Cancelled",
+            });
+          });
+        } else {
+          res.send({
+            status: 200,
+            msg: "Can't cancel the order after it's accepted.",
+          });
+        }
+      }
     });
   } else {
     res.send({ status: 201, message: "Your aren't authorized" });
