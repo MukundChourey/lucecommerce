@@ -11,7 +11,7 @@ exports.login = (req, res) => {
   let header = req.get("Authkey");
   if (header == "asdfgh") {
     if (!req.body.parameter || !req.body.password) {
-      return res.send({ status: 201, message: "inadequate login data" });
+      return res.send({ status: 201, message: "Inadequate Login Data" });
     } else {
       let password = escapeHtml(req.body.password);
       let parameter = escapeHtml(req.body.parameter);
@@ -23,7 +23,7 @@ exports.login = (req, res) => {
           if (!note) {
             return res.status(201).send({
               status: 201,
-              message: "No user with these data exist",
+              message: "No user with this data exist",
             });
           } else {
             if (password == note.password) {
@@ -42,7 +42,7 @@ exports.login = (req, res) => {
         .catch((err) => {
           return res.status(201).send({
             status: 201,
-            message: "there was an error",
+            message: "Error occurred",
           });
         });
     }
@@ -76,7 +76,7 @@ exports.register = (req, res) => {
       var validatecontact = regEx3.test(req.body.contactNo);
 
       if (!validateemail || !validatecontact) {
-        res.send({ status: 201, message: "invalid email or contact number" });
+        res.send({ status: 201, message: "Invalid Email or Contact Number" });
       } else {
         // let shopId = escapeHtml(req.body.shopId);
         let userName = escapeHtml(req.body.ownerName);
