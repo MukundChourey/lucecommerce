@@ -105,7 +105,7 @@ exports.register = (req, res) => {
             } else if (data[0].contactNo == contactNo) {
               res.send({
                 status: 201,
-                message: "contact number already existed!",
+                message: "Contact Number Already Existed!",
               });
             }
           } else {
