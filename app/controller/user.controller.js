@@ -98,10 +98,10 @@ exports.register = (req, res) => {
             if (data[0].email == email && data[0].contactNo == contactNo) {
               res.send({
                 status: 201,
-                message: "email id and contact number already existed!",
+                message: "Email Id and Contact Number Already Existed!",
               });
             } else if (data[0].email == email) {
-              res.send({ status: 201, message: "email id already existed!" });
+              res.send({ status: 201, message: "Email Id Already Existed!" });
             } else if (data[0].contactNo == contactNo) {
               res.send({
                 status: 201,
